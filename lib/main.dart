@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_app/answer.dart';
 import 'package:quiz_app/question.dart';
@@ -29,13 +31,19 @@ class QuizAppPage extends StatefulWidget {
 }
 
 class _QuizAppPage extends State<QuizAppPage> {
-  int activeQuestionIndex = 0;
+  int _activeQuestionIndex = 0;
 
   List<String> get answers {
-    return questions[activeQuestionIndex]['answers'];
+    return hasSelectedQuestion
+        ? _questions[_activeQuestionIndex]['answers']
+        : [];
   }
 
-  final List<Map<String, dynamic>> questions = [
+  bool get hasSelectedQuestion {
+    return _activeQuestionIndex < _questions.length;
+  }
+
+  final List<Map<String, dynamic>> _questions = [
     {
       'question': 'Which animal do you like the most',
       'answers': ['Dog', 'Cat', 'Bird']
@@ -51,9 +59,9 @@ class _QuizAppPage extends State<QuizAppPage> {
   ];
 
   void _selectedAnswer() {
-    if (activeQuestionIndex != questions.length - 1) {
+    if (hasSelectedQuestion) {
       setState(() {
-        activeQuestionIndex++;
+        _activeQuestionIndex++;
       });
     }
   }
@@ -62,15 +70,20 @@ class _QuizAppPage extends State<QuizAppPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Quiz App')),
-        body: Container(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-                child: Column(
-              children: <Widget>[
-                Question(title: questions[activeQuestionIndex]['question']),
-                ...answers.map((answer) =>
-                    Answer(title: answer, selectedAnswer: _selectedAnswer))
-              ],
-            ))));
+        body: hasSelectedQuestion
+            ? Container(
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                    child: Column(
+                  children: <Widget>[
+                    Question(
+                        title: _questions[_activeQuestionIndex]['question']),
+                    ...answers.map((answer) =>
+                        Answer(title: answer, selectedAnswer: _selectedAnswer))
+                  ],
+                )))
+            : const Center(
+                child:
+                    Text('Congratulations', style: TextStyle(fontSize: 24))));
   }
 }
