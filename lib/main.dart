@@ -1,8 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:quiz_app/answer.dart';
-import 'package:quiz_app/question.dart';
+import 'package:quiz_app/questions.dart';
+import 'package:quiz_app/restart.dart';
 
 void main() {
   runApp(const QuizApp());
@@ -66,24 +64,21 @@ class _QuizAppPage extends State<QuizAppPage> {
     }
   }
 
+  void _restartQuiz() {
+    setState(() {
+      _activeQuestionIndex = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Quiz App')),
         body: hasSelectedQuestion
-            ? Container(
-                padding: const EdgeInsets.all(16),
-                child: Center(
-                    child: Column(
-                  children: <Widget>[
-                    Question(
-                        title: _questions[_activeQuestionIndex]['question']),
-                    ...answers.map((answer) =>
-                        Answer(title: answer, selectedAnswer: _selectedAnswer))
-                  ],
-                )))
-            : const Center(
-                child:
-                    Text('Congratulations', style: TextStyle(fontSize: 24))));
+            ? Questions(
+                question: _questions[_activeQuestionIndex]['question'],
+                answers: answers,
+                selectedAnswer: _selectedAnswer)
+            : Restart(restart: _restartQuiz));
   }
 }
